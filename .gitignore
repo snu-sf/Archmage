@@ -16,6 +16,7 @@
 # Emacs saves
 *~
 # Executables and configuration
+CCR/_CoqProject
 CompCert-intptr/ccomp
 CompCert-intptr/ccomp.byte
 CompCert-intptr/ccomp.prof
