@@ -11,10 +11,8 @@ and compiles without any issues.
 ## Download, installation, and sanity-testing
 The artifact is presented as a VirtualBox image ("artifact.ova"), but we
 are also submitting the latest source code ("Archmage.tar.gz") just in
-case. Both of these are also publicly available
-[here](https://github.com/snu-sf/Archmage).  
-If there is a need to update our artifact in the middle of the review
-process, we will make the latest version available on those links.
+case. If there is a need to update our artifact in the middle of the review
+process, we will make the latest version available on [here](https://github.com/snu-sf/Archmage).
 
 ### Installing via VirtualBox image
 1. Install [VirtualBox](https://www.virtualbox.org/) (version 7.1.2 is
