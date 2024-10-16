@@ -278,3 +278,4 @@ Additionally, there are several other notable differences:
 - Null pointers are considered to have a 'None' block id, so that `metadata` (Block Data in Fig. 11) has an 'option block' type.
 - `tag` describes which space (Stack, Heap, Global) the accessibility or liveness refers to. (This prevents freeing of global variables.)
 - The implementations of `delete_hd_spec` and `delete_tl_spec` cover not only the general cases outlined in the paper, but also include the specific case when the list is empty.
+- In the paper, the hoare triple for pointer comparison has been simplified by omitting the corner case involving null pointers (e.g. cmp_ptr_hoare4).
