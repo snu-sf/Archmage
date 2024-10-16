@@ -52,7 +52,7 @@ have internet connection):
 
 or you can use the raw source code that we submitted:
 
-3. Run `mv Archmage.tar.gz fresh_directory && tar -xvf Archmage.tar.gz && cd Archmage` and run the script above.
+4. Run `mv Archmage.tar.gz fresh_directory && tar -xvf Archmage.tar.gz && cd Archmage` and run the script above.
 
 ## CompCertCast Quick Start
 1. Compiling CompCertCast follows the same optimization scenarios as for CompCert
