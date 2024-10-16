@@ -92,7 +92,8 @@ To evaluate this artifact, we propose the following steps:
    Check that it generates the same assembly as the Original CompCert 
    when compiling existing CompCert benchmarks (which do not contain integer-
    pointer casts). 
-   (`render.c` is an exception for reasons mentioned in the paper) 
+   (`render.c` is an exception for reasons mentioned in the paper) Note: `ccomp_orig` is the binary of the original CompCert v3.9, and `test_orig` contains the exactly same benchmarks as `test`.
+
 5. If you are using a pre-compiled Coq development, 
    confirm that the Coq development compiles without any problem.
    To do so, type `make clean` in both `CCR` and `CompCert-intptr` directories
