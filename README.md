@@ -24,7 +24,9 @@ Now, you can use the VirtualBox image that we submitted:
 
 2. Import the downloaded `artifact.ova` file into Virtual Box.
 
-3. Launch the VirtualBox Image, Log-in, open a terminal, and run 'cd ~/Archmage
+3. Launch the VirtualBox Image, Log-in, open a terminal, and run `cd ~/Archmage`
+
+4. ID/PW: artifact/artifact
 
 Note: The submitted VirtualBox image has emacs and Proof General installed, 
       which can be used to explore the Coq development.
