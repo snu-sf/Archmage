@@ -117,7 +117,7 @@ Fig. 4
 
 Fig. 5
 (in CompCert-intptr/common directory)
-- alloc --> `extcall_malloc_sem` in Events.v
+- alloc --> `alloc` in Memory.v
 - free --> `extcall_free_sem` in Events.v
 - ptoi --> `capture` in Memory.v
 - range --> `addr_is_in_block` in Memory.v means physical address in range
