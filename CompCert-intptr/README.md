@@ -44,7 +44,7 @@ Recherche en Informatique et en Automatique (INRIA) and
 AbsInt Angewandte Informatik GmbH.
 
 The additions related to the SSA middle-end are Copyright Univ Rennes,
-Inria, IRISA.
+Inria, IRISA. (except for the parts we modified including Copy propagation and Cast propagation)
 
 ## Contact
 General discussions on CompCert take place on the
@@ -56,3 +56,5 @@ info@absint.com
 
 For inquiries on the SSA-specific additions, please contact Delphine
 Demange.
+
+For inquiries on the integer-to-pointer-casting-specific additions, please contact Yonghyun Kim.
