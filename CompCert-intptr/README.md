@@ -30,6 +30,11 @@ The following people contibuted to this extension (alphabetic order):
 Sandrine Blazy, Delphine Demange, Yon Fernandez de Retana, David
 Pichardie, Léo Stefanesco.
 
+## CompCertCast
+
+This development is a version that supports CompCert integer-pointer casting. 
+For detailed explanations, please refer to the README in the parent directory and the paper.
+
 ## License
 CompCert is not free software.  This non-commercial release can only
 be used for evaluation, research, educational and personal purposes.
@@ -46,6 +51,8 @@ AbsInt Angewandte Informatik GmbH.
 The additions related to the SSA middle-end are Copyright Univ Rennes,
 Inria, IRISA. (except for the parts we modified including Copy propagation and Cast propagation)
 
+Our changes to CompCert and CompCertSSA are Copyright Seoul National University.
+
 ## Contact
 General discussions on CompCert take place on the
 [compcert-users@inria.fr](https://sympa.inria.fr/sympa/info/compcert-users)
@@ -57,4 +64,5 @@ info@absint.com
 For inquiries on the SSA-specific additions, please contact Delphine
 Demange.
 
-For inquiries on the integer-to-pointer-casting-specific additions, please contact Yonghyun Kim.
+For inquiries on the integer-pointer-casting-specific additions, please 
+contact Yonghyun Kim.
