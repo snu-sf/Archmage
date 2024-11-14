@@ -285,3 +285,11 @@ Additionally, there are several other notable differences:
 - `tag` describes which space (Stack, Heap, Global) the accessibility or liveness refers to. (This prevents freeing of global variables.)
 - The implementations of `delete_hd_spec` and `delete_tl_spec` cover not only the general cases outlined in the paper, but also include the specific case when the list is empty.
 - In the paper, the hoare triple for pointer comparison has been simplified by omitting the corner case involving null pointers (e.g. cmp_ptr_hoare4).
+
+## Changes
+
+- Enhanced Item 1 of the Evaluation Instructions based on reviewer's suggestion: 
+  introduced additional methods to verify the existence of Admitted Proofs and clearly specified the scope of directories to be checked.
+- Modified Item 5 of the Evaluation Instructions to avoid confusion for users working with raw source code, as per reviewer's feedback.
+- Improved the clarity of mappings between the paper and Coq formalization.
+- Enhanced license and copyright information for both CCR and CompCert-intptr.
