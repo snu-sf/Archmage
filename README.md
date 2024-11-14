@@ -122,9 +122,9 @@ Fig. 4
 
 Fig. 5
 (in CompCert-intptr/common directory)
-- alloc --> `alloc` in Memory.v
-- free --> `extcall_free_sem` in Events.v
-- ptoi --> `capture` in Memory.v
+- alloc --> `alloc` in Memory.v and `extcall_malloc_sem` in Events.v
+- free --> `free` in Memory.v and `extcall_free_sem` in Events.v
+- ptoi --> `capture` in Memory.v and `extcall_capture_sem` in Events.v
 - range --> `addr_is_in_block` in Memory.v means physical address in range
 - valid_pa --> `valid_address_bounded`, `weak_valid_address_range`, `no_concrete_overlap` in Memory.v
 - $toPtr_M$ --> `to_ptr` in Memory.v
