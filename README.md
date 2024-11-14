@@ -76,6 +76,11 @@ To evaluate this artifact, we propose the following steps:
 1. Check that the source code does not contain any `admit` or
    `Admitted.` (e.g., typing `grep -ri "admit" --include="*.v" .`  in
    the project root should print nothing).
+
+    Note: 
+    - You only need to check CCR and CompCert-intptr directories, as other directories (like _opam) may contain the keyword in their documentation.
+    - For CompCert-intptr directory, you can also use the make target: `make check-admitted`
+
 2. Read the Section "Mapping from the paper to the Coq development"
    and check that the Coq development indeed corresponds to the
    paper's presentation.
@@ -92,7 +97,7 @@ To evaluate this artifact, we propose the following steps:
    pointer casts). 
    (`render.c` is an exception for reasons mentioned in the paper) Note: `ccomp_orig` is the binary of the original CompCert v3.9, and `test_orig` contains the exactly same benchmarks as `test`.
 
-5. If you are using a pre-compiled Coq development, 
+5. (VirtualBox Image Users Only) If you are using a pre-compiled Coq development, 
    confirm that the Coq development compiles without any problem.
    To do so, type `make clean` in both `CCR` and `CompCert-intptr` directories
    if you have previously built Coq development or are using the VirtualBox Image.
