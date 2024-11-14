@@ -286,7 +286,7 @@ Additionally, there are several other notable differences:
 - The implementations of `delete_hd_spec` and `delete_tl_spec` cover not only the general cases outlined in the paper, but also include the specific case when the list is empty.
 - In the paper, the hoare triple for pointer comparison has been simplified by omitting the corner case involving null pointers (e.g. cmp_ptr_hoare4).
 
-## Changes
+## Documentation Updates
 
 - Enhanced Item 1 of the Evaluation Instructions based on reviewer's suggestion: 
   introduced additional methods to verify the existence of Admitted Proofs and clearly specified the scope of directories to be checked.
