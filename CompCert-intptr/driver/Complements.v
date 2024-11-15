@@ -652,6 +652,22 @@ Proof.
   etrans; eauto. eapply Lowerbound_correct; eauto.
 Qed.
 
+Lemma transf_clight_program_preservation_lbd' p tp
+    (TRANSF: transf_clight_program p = OK tp) :
+  improves (Clight.semantics1 p) (Lowerbound.semantics tp).
+Proof.
+  eapply transf_clight_program_match in TRANSF.
+  eapply transf_clight_program_preservation_lbd; eauto.
+Qed.
+
+Lemma transf_clight_program_preservation_ssa_lbd' p tp
+    (TRANSF: transf_clight_program_via_SSA p = OK tp) :
+  improves (Clight.semantics1 p) (Lowerbound.semantics tp).
+Proof.
+  eapply transf_clight_program_via_SSA_match in TRANSF.
+  eapply transf_clight_program_preservation_ssa_lbd; eauto.
+Qed.
+
 (** * Extension to separate compilation *)
 
 (** The results above were given in terms of whole-program compilation.
