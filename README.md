@@ -116,7 +116,7 @@ To evaluate this artifact, we propose the following steps:
 ### Section 3. The Memory Model Archmage
 Fig. 4
 (in CompCert-intptr/common directory)
-- M -->  `mem_contents`, `mem_access`, `mem_concrete` in Memory.v
+- M --> `mem_contents`, `mem_access`, `mem_concrete` in Memory.v
 - BlockID --> `block` in Values.v
 - Val --> `val` in Values.v
 
@@ -186,7 +186,7 @@ Fig. 10
 (in CompCert-intptr/driver directory)
 - Full Optimization scenarios in Fig. 10 --> `transf_clight_program_via_SSA` in Compiler.v
 - Optimization scenarios excluding Cast Propagation --> `transf_clight_program` in Compiler.v
-- Adequacy of CompCertCast --> `transf_clight_program_preservation_ssa_lbd` in Complements.v
+- Adequacy of CompCertCast --> `transf_clight_program_preservation_ssa_lbd'` in Complements.v
 
 Section 5. Archmage Logic
 
