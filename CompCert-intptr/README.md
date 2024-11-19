@@ -66,3 +66,9 @@ Demange.
 
 For inquiries on the integer-pointer-casting-specific additions, please 
 contact Yonghyun Kim.
+
+## Difference
+
+If you want to check the modifications we made while developing CompCertCast, you can refer to CompCertCast.patch.
+The patch includes differences in Coq development and other compiler development between CompCertSSA and CompCertCast,
+but does not include additional binaries (e.g., ccomp_orig) and scripts (e.g., test_compare.sh) added for tests.
