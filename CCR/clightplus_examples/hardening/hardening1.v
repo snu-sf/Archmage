@@ -60,40 +60,75 @@ Section SPEC.
         (fun vret => ⌜vret = (Val.xorl (Vlong ptr) (Vlong key))↑⌝)
     )))%I.
 
-  (* long bar(uintptr_t key, uintptr_t ptr) { *)
-  (*   long *q = decode(key, ptr); *)
-  (*   return *q; *)
-  (* } *)
-(* { q = key ^ ptr , q |->v } {r=v. *)
-  Definition bar_spec : fspec :=
-    (mk_simple
-      (fun '(key, ptr, qq, a, m, q, tg, ofs, qqq) => (
-        (ord_pure 20%nat),
-        (fun varg => ⌜varg = [Vlong key; (Vlong ptr)]↑
-                  /\ ((8|Ptrofs.unsigned ofs)%Z)⌝
-                          ** (qq (≃_m) Val.xorl (Vlong ptr) (Vlong key))
-                          ** (qq (↦_m, q) (encode_val Mint64 (Vlong a)))
-                          ** live_(m,tg,qqq) (Val.subl qq (Vptrofs ofs))),
-        (fun vret => ⌜vret = (Vlong a)↑⌝ ** (qq (↦_m, q) (encode_val Mint64 (Vlong a)))
-                                         ** live_(m,tg,qqq) (Val.subl qq (Vptrofs ofs)))
-    )))%I.
-  
-  (* long foo(uintptr_t key, long *p) { *)
-  (*   *p = 42; *)
-  (*   uintptr_t qi = encode(key, p); *)
-  (*   long ret = bar(key, qi); *)
-  (*   return ret; *)
+
+  (* long bar(long k, uintptr_t ep, long x) { *)
+  (*   long *q = decode(k, ep); *)
+  (*   *q = x; *)
+  (*   return *q;                    *)
   (* } *)
 
+  (* PRE { p ~^m ip * p |->^m _ * ep = xor ip k } *)
+  (* POST { r. r = x * p |->^m x } *)
+
+
+  Definition bar_spec : fspec :=
+    (mk_simple
+      (fun '(p, ip, m, ofs, ep, x, key) => (
+        (ord_pure 30%nat),
+        (fun varg => ∃ dv, ⌜varg = [Vlong key; Vlong ep; Vlong x]↑
+                        /\ ((8|Ptrofs.unsigned ofs)%Z)
+                        (* /\ (strings.length dv = size_chunk_nat Mint64) *)
+                        /\ (Vlong ep = Val.xorl (Vlong ip) (Vlong key))⌝
+                          ** (p (≃_ m) (Vlong ip))
+                          ** (p (↦_m, 1) (encode_val Mint64 dv))
+                          ** p ⊨ m # ofs
+                           ),
+        (fun vret => ⌜vret = (Vlong x)↑⌝
+                          ** (p (↦_m, 1) (encode_val Mint64 (Vlong x)))
+        )
+    )))%I.
+  
+  (* Definition bar_spec : fspec := *)
+  (*   (mk_simple *)
+  (*     (fun '(p, ip, m, ofs, ep, x, key, dv) => ( *)
+  (*       (ord_pure 20%nat), *)
+  (*       (fun varg => ⌜varg = [Vlong key; Vlong ep; Vlong x]↑ *)
+  (*                 /\ ((8|Ptrofs.unsigned ofs)%Z) *)
+  (*                 /\ (Vlong ep = Val.xorl (Vlong ip) (Vlong key))⌝ *)
+  (*                     ** (p (≃_ m) (Vlong ip)) *)
+  (*                     ** (p (↦_m, 1) (encode_val Mint64 dv)) *)
+  (*                     ** p ⊨ m # ofs *)
+  (*       (* ** live_(m,tg,qqq) (Val.subl qq (Vptrofs ofs)) *) *)
+  (*       ), *)
+  (*       (fun vret => ⌜vret = (Vlong x)↑⌝ ** (p (↦_m, 1) (encode_val Mint64 (Vlong x))) *)
+  (*                           (* ** live_(m,tg,qqq) (Val.subl qq (Vptrofs ofs)) *) *)
+
+  (*       ) *)
+  (*   )))%I. *)
+
+
+  (* // Function that creates encoded pointer *)
+  (* long foo(long *p, long k, long x) { *)
+  (*     uintptr_t ep = encode(k, p);  // pointer encoding *)
+  (*     bar(k, ep, x);     // pass encoded pointer *)
+  (*     return *p;  // *p = x *)
+  (* } *)
+
+  (* PRE { p |->^m _ * live^m (p - 0) } *)
+  (* POST { r. r = x * p |->^m x * live^m (p - 0) } *)
   Definition foo_spec : fspec :=
     (mk_simple
-      (fun '(key, ptr, m, q, tg, ofs) => (
-        (ord_pure 30%nat),
-        (fun varg => ∃ v, ⌜varg = [Vlong key; ptr]↑ /\ ((8|Ptrofs.unsigned ofs)%Z)⌝
-                          ** (ptr (↦_m, 1) (encode_val Mint64 v))
-                          ** live_(m,tg,q) (Val.subl ptr (Vptrofs ofs))
+      (fun '(p, m, q, tg, ofs, x, key) => (
+        (ord_pure 70%nat),
+        (fun varg => ∃ dv, ⌜varg = [p; Vlong key; Vlong x]↑
+                        /\ ((8|Ptrofs.unsigned ofs)%Z)⌝
+                        (* /\ (strings.length dv = size_chunk_nat Mint64) *)
+                          ** (p (↦_m, 1) (encode_val Mint64 dv))
+                          ** live_(m,tg,q) (Val.subl p (Vptrofs ofs))
                            ),
-        (fun vret => ⌜vret = (Vlong (Int64.repr 42))↑⌝)
+        (fun vret => ⌜vret = (Vlong x)↑⌝
+                          ** (p (↦_m, 1) (encode_val Mint64 (Vlong x)))
+                          ** live_(m,tg,q) (Val.subl p (Vptrofs ofs)))
     )))%I.
 
   (* sealed *)

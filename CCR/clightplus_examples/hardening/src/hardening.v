@@ -80,16 +80,16 @@ Definition _decode : ident := $"decode".
 Definition _decoded : ident := $"decoded".
 Definition _encode : ident := $"encode".
 Definition _encoded : ident := $"encoded".
+Definition _ep : ident := $"ep".
 Definition _foo : ident := $"foo".
+Definition _k : ident := $"k".
 Definition _key : ident := $"key".
 Definition _main : ident := $"main".
 Definition _p : ident := $"p".
 Definition _ptr : ident := $"ptr".
 Definition _q : ident := $"q".
-Definition _qi : ident := $"qi".
-Definition _ret : ident := $"ret".
+Definition _x : ident := $"x".
 Definition _t'1 : ident := 128%positive.
-Definition _t'2 : ident := 129%positive.
 
 Definition f_encode := {|
   fn_return := tulong;
@@ -124,7 +124,7 @@ Definition f_decode := {|
 Definition f_bar := {|
   fn_return := tlong;
   fn_callconv := cc_default;
-  fn_params := ((_key, tulong) :: (_ptr, tulong) :: nil);
+  fn_params := ((_k, tlong) :: (_ep, tulong) :: (_x, tlong) :: nil);
   fn_vars := nil;
   fn_temps := ((_q, (tptr tlong)) :: (_t'1, (tptr tvoid)) :: nil);
   fn_body :=
@@ -133,37 +133,34 @@ Definition f_bar := {|
     (Scall (Some _t'1)
       (Evar _decode (Tfunction (Tcons tulong (Tcons tulong Tnil))
                       (tptr tvoid) cc_default))
-      ((Etempvar _key tulong) :: (Etempvar _ptr tulong) :: nil))
+      ((Etempvar _k tlong) :: (Etempvar _ep tulong) :: nil))
     (Sset _q (Etempvar _t'1 (tptr tvoid))))
-  (Sreturn (Some (Ederef (Etempvar _q (tptr tlong)) tlong))))
+  (Ssequence
+    (Sassign (Ederef (Etempvar _q (tptr tlong)) tlong) (Etempvar _x tlong))
+    (Sreturn (Some (Ederef (Etempvar _q (tptr tlong)) tlong)))))
 |}.
 
 Definition f_foo := {|
   fn_return := tlong;
   fn_callconv := cc_default;
-  fn_params := ((_key, tulong) :: (_p, (tptr tlong)) :: nil);
+  fn_params := ((_p, (tptr tlong)) :: (_k, tlong) :: (_x, tlong) :: nil);
   fn_vars := nil;
-  fn_temps := ((_qi, tulong) :: (_ret, tlong) :: (_t'2, tlong) ::
-               (_t'1, tulong) :: nil);
+  fn_temps := ((_ep, tulong) :: (_t'1, tulong) :: nil);
   fn_body :=
 (Ssequence
-  (Sassign (Ederef (Etempvar _p (tptr tlong)) tlong)
-    (Econst_int (Int.repr 42) tint))
   (Ssequence
-    (Ssequence
-      (Scall (Some _t'1)
-        (Evar _encode (Tfunction (Tcons tulong (Tcons (tptr tvoid) Tnil))
-                        tulong cc_default))
-        ((Etempvar _key tulong) :: (Etempvar _p (tptr tlong)) :: nil))
-      (Sset _qi (Etempvar _t'1 tulong)))
-    (Ssequence
-      (Ssequence
-        (Scall (Some _t'2)
-          (Evar _bar (Tfunction (Tcons tulong (Tcons tulong Tnil)) tlong
-                       cc_default))
-          ((Etempvar _key tulong) :: (Etempvar _qi tulong) :: nil))
-        (Sset _ret (Etempvar _t'2 tlong)))
-      (Sreturn (Some (Etempvar _ret tlong))))))
+    (Scall (Some _t'1)
+      (Evar _encode (Tfunction (Tcons tulong (Tcons (tptr tvoid) Tnil))
+                      tulong cc_default))
+      ((Etempvar _k tlong) :: (Etempvar _p (tptr tlong)) :: nil))
+    (Sset _ep (Etempvar _t'1 tulong)))
+  (Ssequence
+    (Scall None
+      (Evar _bar (Tfunction (Tcons tlong (Tcons tulong (Tcons tlong Tnil)))
+                   tlong cc_default))
+      ((Etempvar _k tlong) :: (Etempvar _ep tulong) :: (Etempvar _x tlong) ::
+       nil))
+    (Sreturn (Some (Ederef (Etempvar _p (tptr tlong)) tlong)))))
 |}.
 
 Definition composites : list composite_definition :=

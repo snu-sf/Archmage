@@ -12,14 +12,28 @@ void *decode(uintptr_t key, uintptr_t ptr) {
   return decoded;
 }
 
-long bar(uintptr_t key, uintptr_t ptr) {
-  long *q = decode(key, ptr);
-  return *q;
+// Function that uses encoded pointer
+long bar(long k, uintptr_t ep, long x) {
+    long *q = decode(k, ep);
+    *q = x;
+    return *q;                   
 }
 
-long foo(uintptr_t key, long *p) {
-  *p = 42;
-  uintptr_t qi = encode(key, p);
-  long ret = bar(key, qi);
-  return ret;
+// Function that creates encoded pointer
+long foo(long *p, long k, long x) {
+    uintptr_t ep = encode(k, p);  // pointer encoding
+    bar(k, ep, x);     // pass encoded pointer
+    return *p;  // *p = x
 }
+
+/* long bar(uintptr_t key, uintptr_t ptr) { */
+/*   long *q = decode(key, ptr); */
+/*   return *q; */
+/* } */
+
+/* long foo(uintptr_t key, long *p) { */
+/*   *p = 42; */
+/*   uintptr_t qi = encode(key, p); */
+/*   long ret = bar(key, qi); */
+/*   return ret; */
+/* } */

@@ -223,9 +223,9 @@ Section PROOF.
     set (H := hide 1).
 
     iIntros "[INV PRE]". des_ifs_safe. ss.
-    iDestruct "PRE" as "[[[PRE'' PRE] PRE'] %]".
-    iDestruct "PRE''" as "[[% %] RELT]".
-    des. clarify. hred_r.
+    iDestruct "PRE" as "[PRE %]". iDestruct "PRE" as (dv) "[PRE OFS]".
+    iDestruct "PRE" as "[PRE WRT]". iDestruct "PRE" as "[PRE RELT]".
+    iDestruct "PRE" as "[% [% %]]". des. clarify. hred_r.
 
     unhide. remove_tau. unhide. remove_tau. unhide. remove_tau.
 
@@ -249,41 +249,40 @@ Section PROOF.
       { ss. } }
     instantiate (1:=19). eapply Ord.S_lt. hred_r.
 
-    iSplitR "PRE PRE' RELT".
-    { iSplit; ss. }
+    iSplitR; [iSplit; ss|].
     iIntros. des. clarify.
-    iExists _. iSplitR "PRE PRE' RELT"; eauto.
-    hred_r. remove_tau. unhide. remove_tau. unhide. remove_tau. des_ifs_safe.
-    hred_r.
-    iPoseProof (live_has_offset_ofs with "PRE'") as "[PRE' PRE_ofs]".
-    iApply isim_ccallU_load; ss; oauto.
-    iPoseProof (equiv_dup with "RELT") as "RELT1".
-    iDestruct "RELT1" as "[RELT RELT1]".
-    iSplitL "PRE PRE_ofs RELT".
-    { iSplitR "PRE PRE_ofs RELT"; ss. iExists _. iSplitL "PRE PRE_ofs RELT".
-      { iPoseProof (equiv_dup with "RELT") as "RELT'".
-        iDestruct "RELT'" as "[RELT1 RELT2]".
-        iCombine "RELT1 PRE" as "PTO".
-        iPoseProof (equiv_point_comm with "PTO") as "PTO'".
-        iFrame. instantiate (1:=i). unfold Vptrofs. des_ifs_safe.
-        iCombine "RELT2 PRE_ofs" as "LIVE".
-        iPoseProof (_equiv_has_offset_comm with "LIVE") as "LIVE". iFrame. }
-      iSplits; eauto. }
+    iExists _. iSplitR "RELT WRT OFS"; eauto.
+    hred_r. remove_tau. unhide. remove_tau. unhide. remove_tau.
+    unhide. remove_tau. des_ifs_safe.
+    hred_r. rewrite cast_long; eauto. hred_r.
+    rewrite Int64.xor_assoc. rewrite Int64.xor_idem. rewrite Int64.xor_zero.
 
-    iIntros (st_src1 st_tgt1) "[INV PRE]". unfold Vptrofs. des_ifs_safe.
-    hred_r. rewrite decode_encode_item. rewrite cast_long; eauto. hred_r.
-    hred_l.
-    iApply isim_choose_src.
-
-    iExists _. iApply isim_ret.
-    iFrame.
-    iPoseProof (equiv_dup with "RELT1") as "RELT1".
-    iDestruct "RELT1" as "[RELT RELT1]".
-    iSplitL "PRE RELT RELT1"; eauto.
-    iSplitR "PRE RELT1"; eauto.
-    iPoseProof (equiv_sym with "RELT1") as "RELT1".
-    iCombine "RELT1 PRE" as "PRE".
-    iPoseProof (equiv_point_comm with "PRE") as "PRE". eauto.
+    iPoseProof (equiv_dup with "RELT") as "RELT'". iDestruct "RELT'" as "[RELT1 RELT2]".
+    iPoseProof (equiv_dup with "RELT1") as "RELT'". iDestruct "RELT'" as "[RELT1 RELT3]".
+    iCombine "RELT2 OFS" as "RELTOFS". iPoseProof (_equiv_has_offset_comm with "RELTOFS") as "OFS".
+    iCombine "RELT1 WRT" as "RELTWRT". iPoseProof (equiv_point_comm with "RELTWRT") as "WRT".
+    iPoseProof (_has_offset_dup with "OFS") as "OFS". iDestruct "OFS" as "[OFS OFS']".
+    
+    iApply isim_ccallU_store; ss; oauto.
+    iSplitL "WRT OFS"; eauto.
+    { iSplit; ss. instantiate (1:=m).
+      iExists (encode_val Mint64 dv). iExists i2.
+      iSplitR "OFS"; eauto. iSplitR "WRT"; eauto.
+      erewrite encode_val_length. ss. }
+    iIntros (st_src1 st_tgt1) "[INV WRT]".
+    hred_r. remove_tau. unhide. remove_tau. des_ifs_safe.
+    hred_r. iApply isim_ccallU_load; ss; oauto.
+    iSplitR "RELT3"; ss.
+    { iSplit; ss. iExists i2. iSplitL.
+      - iCombine "WRT OFS'" as "WRTOFS". eauto.
+      - ss. }
+    iIntros (st_src2 st_tgt2). iIntros "[INV WRT]".
+    erewrite decode_encode_item; eauto. hred_r. erewrite cast_long; eauto. hred_r.
+    hred_l. iApply isim_choose_src. iExists _. iApply isim_ret.
+    iSplitL "INV"; ss. iSplitL "WRT RELT3"; ss. iSplitR "WRT RELT3"; ss.
+    iPoseProof (equiv_sym with "RELT3") as "RELT".
+    iCombine "RELT WRT" as "RELTWRT". iApply equiv_point_comm. eauto.
+    Unshelve. ss. ss.
   Qed.
 
   Ltac ord_tac := eapply OrdArith.lt_from_nat; eapply Nat.lt_succ_diag_r.
@@ -314,51 +313,43 @@ Section PROOF.
     iIntros "[INV PRE]". des_ifs_safe. ss.
     
     iDestruct "PRE" as "[PRE %]".
-    iDestruct "PRE" as (v0) "[PRE PRE']".
-    iDestruct "PRE" as "[[% %] PRE]".
+    iDestruct "PRE" as (dv) "[PRE LIVE]".
+    iDestruct "PRE" as "[[% %] WRT]".
 
     des. clarify. hred_r.
 
     unhide. remove_tau. unhide. remove_tau. unhide. remove_tau.
-    iPoseProof (points_to_is_ptr with "PRE") as "#->".
-    hred_r.
-    iApply isim_apc. iExists (Some (40%nat : Ord.t)).
-    iPoseProof (live_has_offset_ofs with "PRE'") as "[PRE' PRE_ofs]".
-    iApply isim_ccallU_store; ss; oauto.
-    iSplitL "PRE PRE_ofs".
-    { iSplitR "PRE PRE_ofs"; ss.
-      iExists (encode_val Mint64 v0). 
-      iFrame. iSplits; ss. destruct v0; ss. }
-    iIntros (st_src1 st_tgt1) "[INV' PRE]". unfold Vptrofs. des_ifs_safe.
-    hred_r. remove_tau. unhide. remove_tau. unhide. remove_tau. unhide. remove_tau.
 
     hexploit SKINCLENV.
     { instantiate (2:= "encode"). unfold _hardening, prog, mkprogram. des_ifs_safe. ss.
       left. eauto. }
     i. des. rewrite H0. hred_r.
-    iPoseProof ((@point_cast_ptr _ _ Es) with "PRE") as "#->".
-    hred_r. rewrite cast_long; eauto. hred_r. des_ifs_safe.
-    replace (Init.Nat.pred (Pos.to_nat (Pos.of_succ_nat blk))) with blk by nia.
 
+    iPoseProof ((@point_cast_ptr _ _ Es) with "WRT") as "#->".
+    hred_r. des_ifs_safe. erewrite cast_long; eauto. hred_r.
+    replace (Init.Nat.pred (Pos.to_nat (Pos.of_succ_nat blk))) with blk by nia.
+    
     hexploit SKINCLGD; eauto.
     { unfold _hardening, prog, mkprogram. des_ifs_safe. ss.
       left. eauto. }
-    i. rewrite H1. hred_r. ss. hred_r.
+    i. rewrite H1. hred_r. ss.
+    iApply isim_apc. iExists (Some (40%nat : Ord.t)).
 
-    (* iApply isim_apc. iExists (Some (20%nat : Ord.t)). *)
+    (* encode *)
     iApply isim_ccallU_pure; et.
     { eapply fn_has_spec_in_stb; et.
       { eapply STBINCL. stb_tac. unfold hardeningStb. unseal "stb". ss. }
       { instantiate (1:=(_ , _ , _ , _, _ , _)). ss. eapply OrdArith.lt_from_nat. lia. }
       { ss. } }
-    instantiate (1:=19). eapply OrdArith.lt_from_nat. lia. hred_r. ss.
-    iSplitL "PRE'".
-    { ss. iSplit; ss. iSplit; ss. iFrame. eauto. }
-    iIntros (st_src2 st_tgt2 ret_src ret_tgt) "[INV'' [PRE' %]]".
-    iDestruct "PRE'" as (iptr) "[[% ILIVE] RELT]".
-    rewrite H4. iExists _. iSplitR; ss.
+    instantiate (1:=19). eapply OrdArith.lt_from_nat. lia. ss.
+    iSplitL "LIVE".
+    { iSplitR; ss. iSplitL; ss. iSplitR; ss. }
 
-    hred_r. remove_tau. unhide. remove_tau. unhide. remove_tau. unhide. remove_tau. unhide. remove_tau.
+    iIntros (st_src2 st_tgt2 ret_src ret_tgt) "[INV'' [PRE' %]]".
+    iDestruct "PRE'" as (ip) "[[% LIVE] RELT]".
+    iExists _. iSplit; ss.
+
+    hred_r. remove_tau. unhide. remove_tau. unhide. remove_tau. unhide. remove_tau.
 
     hexploit SKINCLENV.
     { instantiate (2:= "bar"). unfold _hardening, prog, mkprogram. des_ifs_safe. ss.
@@ -369,31 +360,33 @@ Section PROOF.
 
     hexploit SKINCLGD; eauto.
     { unfold _hardening, prog, mkprogram. des_ifs_safe. ss. right. right. eauto. }
-    i. rewrite H3. hred_r.
+    i. rewrite H3. hred_r. rewrite cast_long; eauto. hred_r.
 
     iApply isim_ccallU_pure; et.
     { eapply fn_has_spec_in_stb; et.
       { eapply STBINCL. stb_tac. unfold hardeningStb. unseal "stb". ss. }
-      { instantiate (1:=(_ , _ , _ , _, _ , _, _, _ , _)). ss. eapply OrdArith.lt_from_nat. lia. }
+      { instantiate (1:=(_ , _ , _ , _, _ , _, _)). ss. eapply OrdArith.lt_from_nat. lia. }
       { ss. } }
-    instantiate (1:=18). eapply OrdArith.lt_from_nat. lia.
-    ss.
-    iSplitL "ILIVE PRE RELT".
-    { ss. iSplit; ss. iSplit; ss. iFrame. iSplits; eauto.
-      rewrite Int64.xor_assoc. rewrite Int64.xor_idem. rewrite Int64.xor_zero. eauto. }
-    iIntros (st_src3 st_tgt3 ret_src ret_tgt) "[INV''' [[[% PRE'] PRE''] %]]". subst.
-    iExists _. iSplit; eauto.
-
-    hred_r. remove_tau. unhide. remove_tau. unhide. remove_tau.
-
-    rewrite cast_long; eauto. hred_r.
-    hred_l.
+    instantiate (1:=18). eapply OrdArith.lt_from_nat. lia. ss.
+    iPoseProof (live_has_offset_ofs with "LIVE") as "[LIVE OFS]".
+    iPoseProof (_has_offset_dup with "OFS") as "OFS". iDestruct "OFS" as "[OFS OFS']".
+    iSplitL "OFS WRT RELT".
+    { iSplitR; ss. iSplitL; ss. iExists dv. iSplitR "OFS"; eauto.
+      iSplitR "WRT"; eauto. }
+    iIntros (st_src3 st_tgt3 ret_src ret_tgt) "[INV''' [[% WRT] %]]".
+    iExists _. iSplit; ss.
+    hred_r. remove_tau. unhide. remove_tau.
+    iPoseProof (@points_to_is_ptr with "WRT") as "#->".
+    hred_r. iApply isim_ccallU_load; ss; oauto. iSplitR "LIVE".
+    { iSplitR; ss. iExists i1. iSplitL; [iFrame|]. ss. }
+    iIntros (st_src4 st_tgt4) "[INV'' WRT]". erewrite decode_encode_item; eauto.
+    hred_r. erewrite cast_long; eauto. hred_r.
     
-    iApply isim_choose_src.
-    iExists _. iApply isim_ret. iSplits; eauto.
+    hred_l. iApply isim_choose_src.
+    iExists _. iApply isim_ret. iSplits; eauto. iSplitR "LIVE"; eauto.
     Unshelve. ss. ss.
   Qed.
-    
+
   End SIMFUNS.
 
 End PROOF.
